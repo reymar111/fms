@@ -1,47 +1,31 @@
 <?php
 
-use App\Http\Controllers\AcademicYearController;
+use Inertia\Inertia;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\ClientController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\DeceasedController;
 use App\Http\Controllers\BurialPlotController;
 use App\Http\Controllers\BurialTypeController;
-use App\Http\Controllers\ClientController;
-use App\Http\Controllers\CollegeController;
-use App\Http\Controllers\DeceasedController;
-use App\Http\Controllers\OffenseLevelController;
-use App\Http\Controllers\PenaltyActionController;
-use App\Http\Controllers\PenaltyController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\ProgramController;
 use App\Http\Controllers\ReservationController;
-use App\Http\Controllers\SectionController;
-use App\Http\Controllers\SemesterController;
-use App\Http\Controllers\StatusController;
-use App\Http\Controllers\StudentController;
-use App\Http\Controllers\TransactionViolationController;
-use App\Http\Controllers\ViolationCategoryController;
-use App\Http\Controllers\ViolationController;
-use App\Http\Controllers\YearLevelController;
-use App\Models\OffenseLevel;
-use App\Models\ViolationCategory;
-use Illuminate\Foundation\Application;
-use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 Route::get('/', function () {
+    if (auth()->check()) {
+        return redirect('/reservation'); // Redirect to dashboard if already authenticated
+    }
+
     return Inertia::render('Auth/Login', [
         'canResetPassword' => Route::has('password.request'),
         'status' => session('status'),
     ]);
-
-    // return Inertia::render('Welcome', [
-    //     'canLogin' => Route::has('login'),
-    //     'canRegister' => Route::has('register'),
-    //     'laravelVersion' => Application::VERSION,
-    //     'phpVersion' => PHP_VERSION,
-    // ]);
 });
 
 Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
+    return redirect('/reservation');
+    // return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
@@ -90,6 +74,33 @@ Route::middleware('auth')->group(function () {
         Route::patch('/update/{reservation}', [ReservationController::class, 'update'])->name('reservation.update');
         Route::patch('/update_status/{reservation}', [ReservationController::class, 'updateStatus'])->name('reservation.update_status');
         Route::delete('/destroy/{reservation}', [ReservationController::class, 'destroy'])->name('reservation.destroy');
+    });
+
+    // payment
+    Route::prefix('payment')->group(function() {
+        Route::get('/',[PaymentController::class, 'index'])->name('payment.index');
+        Route::post('/store', [PaymentController::class, 'store'])->name('payment.store');
+        Route::patch('/update/{payment}', [PaymentController::class, 'update'])->name('payment.update');
+        Route::patch('/update_status/{payment}', [PaymentController::class, 'updateStatus'])->name('payment.update_status');
+        Route::delete('/destroy/{payment}', [PaymentController::class, 'destroy'])->name('payment.destroy');
+    });
+
+    // payment
+
+    Route::prefix('user')->middleware('isAdmin')->group(function () {
+        Route::get('/', [UserController::class, 'index'])->name('user.index');
+        Route::post('/store', [UserController::class, 'store'])->name('user.store');
+        Route::patch('/update/{user}', [UserController::class, 'update'])->name('user.update');
+        Route::delete('/destroy/{user}', [UserController::class, 'destroy'])->name('user.destroy');
+    });
+
+    // reservation summary
+    Route::prefix('reports')->group(function() {
+        Route::get('/reservation_summary', [ReportController::class, 'reservationSummary'])->name('report.reservation_summary');
+        Route::get('/payment', [ReportController::class, 'generatePaymentReport'])->name('report.payment');
+        Route::get('/available_burial_plots', [ReportController::class, 'generateAvailablePlotsReport'])->name('report.available_burial_plots');
+        Route::get('/deceased_burial_report', [ReportController::class, 'generateDeceasedBurialReport'])->name('report.deceased_burial_report');
+        Route::get('/revenue_report', [ReportController::class, 'generateRevenueReport'])->name('report.revenue_report');
     });
 
 });

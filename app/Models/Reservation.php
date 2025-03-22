@@ -28,4 +28,11 @@ class Reservation extends Model
         return $this->belongsTo(BurialPlot::class, 'burial_plot_id', 'id');
 
     }
+
+    public function payments()
+    {
+
+        return $this->hasMany(Payment::class, 'reservation_id', 'id');
+
+    }
 }

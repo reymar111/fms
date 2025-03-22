@@ -17,10 +17,10 @@ class ReservationController extends Controller
      */
     public function index()
     {
-        $reservations = Reservation::with(['client', 'deceased', 'burial_plot'])->orderBy('created_at', 'desc')->get();
+        $reservations = Reservation::with(['client', 'deceased', 'burial_plot', 'payments'])->orderBy('created_at', 'desc')->get();
         $clients = Client::all();
         $deceaseds = Deceased::all();
-        $burial_plots = BurialPlot::where('status', 'Available')->get();
+        $burial_plots = BurialPlot::whereIn('status', ['Available', 'Reserved'])->get();
 
         return Inertia::render('Reservation',
         [

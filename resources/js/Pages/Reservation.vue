@@ -137,6 +137,12 @@
                                 <td class="px-4 py-2">{{ item.status }}</td>
                                 <td class="px-4 py-2">{{ item.burial_plot != null && item.burial_plot.burial_type != null ? item.burial_plot.burial_type.name : '' }}</td>
                                 <td class="px-4 py-2 flex space-x-2">
+                                    <button v-if="item.status != 'Pending'" @click="viewItem(item)" type="button" class="text-white bg-yellow-500 hover:bg-yellow-600 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-sm px-3 py-2 text-center inline-flex items-center me-2">
+                                    <svg class="w-6 h-6 text-white-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z"/>
+                                    </svg>
+                                        View
+                                    </button>
                                     <button v-if="item.status === 'Pending'" @click="openStatusForm(item, 'Confirmed')" type="button" class="text-white bg-indigo-500 hover:bg-indigo-600 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-3 py-2 text-center inline-flex items-center me-2">
                                         <svg class="w-6 h-6 text-black-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 11.917 9.724 16.5 19 7.5"/>
@@ -264,8 +270,8 @@
             </div>
         </div>
 
-                <!-- Main modal -->
-                <div  v-if="selected_reservation.active" id="default-modal" tabindex="-1" aria-hidden="true" class="fixed top-0 right-0 left-0 z-50 flex justify-center items-center w-full h-full bg-black bg-opacity-50">
+        <!-- Main modal -->
+        <div  v-if="selected_reservation.active" id="default-modal" tabindex="-1" aria-hidden="true" class="fixed top-0 right-0 left-0 z-50 flex justify-center items-center w-full h-full bg-black bg-opacity-50">
             <div class="relative p-4 w-full max-w-2xl max-h-full">
                 <!-- Modal content -->
                 <div class="relative bg-white rounded-lg shadow-sm ">
@@ -295,6 +301,90 @@
                 </div>
             </div>
         </div>
+
+        <!-- Main modal -->
+        <div v-if="view_reservation.active" id="default-modal" tabindex="-1" aria-hidden="true"
+            class="fixed inset-0 z-50 flex justify-center items-center w-full h-full bg-black bg-opacity-50">
+            <div class="relative p-6 w-full max-w-5xl max-h-[90vh]">
+                <!-- Modal content -->
+                <div class="relative bg-white rounded-lg shadow-lg">
+                    <!-- Modal header -->
+                    <div class="flex items-center justify-between p-6 border-b border-gray-200 rounded-t">
+                        <h3 class="text-2xl font-semibold text-gray-900">
+                            Reservation: {{ view_reservation.code }}
+                        </h3>
+                        <button @click="closeForm" type="button"
+                                class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 flex justify-center items-center"
+                                data-modal-hide="default-modal">
+                            <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                            </svg>
+                            <span class="sr-only">Close modal</span>
+                        </button>
+                    </div>
+
+                    <!-- Modal body with two equal tables -->
+                    <div class="p-6 grid grid-cols-2 gap-6">
+                        <!-- Table 1 -->
+                        <div class="border border-gray-300 rounded-lg shadow-sm p-4">
+                            <h4 class="text-lg font-semibold mb-3">Client Details</h4>
+                            <table class="min-w-full border border-gray-200">
+                                <tr class="border-b">
+                                    <td class="font-medium">Name:</td>
+                                    <td>{{ view_reservation.client.full_name }}</td></tr>
+                                <tr class="border-b">
+                                    <td class="font-medium">Contact:</td>
+                                    <td>{{ view_reservation.client.contact_number }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-medium">Address:</td><td>{{ view_reservation.client.address }}</td></tr>
+                            </table>
+
+                            <h4 class="mt-7 text-lg font-semibold mb-3">Deceased Details</h4>
+                            <table class="min-w-full border border-gray-200">
+                                <tr class="border-b"><td class="font-medium">Name:</td><td>{{ view_reservation.deceased.full_name }}</td></tr>
+                                <tr class="border-b"><td class="font-medium">Birth Date:</td><td>{{ view_reservation.deceased.birth_date }}</td></tr>
+                                <tr><td class="font-medium">Death Date:</td><td>{{ view_reservation.deceased.death_date }}</td></tr>
+                                <tr><td class="font-medium">Burial Date:</td><td>{{ view_reservation.deceased.burial_date }}</td></tr>
+                                <tr><td class="font-medium">Cause of Death:</td><td>{{ view_reservation.deceased.cause_of_death }}</td></tr>
+                            </table>
+                        </div>
+
+                        <!-- Table 2 -->
+                        <div class="border border-gray-300 rounded-lg shadow-sm p-4">
+                            <h4 class="text-lg font-semibold mb-3">Payment Details</h4>
+                            <table class="min-w-full border border-gray-200">
+                                <thead class="bg-gray-100">
+                                    <tr>
+                                        <th class="px-4 py-2 text-left text-gray-700 border-b">#</th>
+                                        <th class="px-4 py-2 text-left text-gray-700 border-b">Amount</th>
+                                        <th class="px-4 py-2 text-left text-gray-700 border-b">Paid on</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-b" v-for="(item, index) in view_reservation.payments" :key="index">
+                                        <td class="px-4 py-2">{{ index + 1 }}</td>
+                                        <td class="px-4 py-2">{{ item.amount }}</td>
+                                        <td class="px-4 py-2">{{ item.created_at }}</td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Modal footer -->
+                    <div class="p-6 border-t border-gray-200 rounded-b">
+                        <button @click="closeViewItem"
+                                type="button"
+                                class="w-full py-3 text-lg font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
 
 
     </AuthenticatedLayout>
@@ -346,11 +436,38 @@ export default {
                 active: false,
             }),
 
+            view_reservation: useForm({
+                burial_plot: {
+                    plot_number: null,
+                    size: null,
+                    status: null,
+                    burial_type_name: null,
+                },
+                client: {
+                    full_name: null,
+                    contact_number: null,
+                    address: null,
+                },
+                deceased: {
+                    birth_date: null,
+                    burial_date: null,
+                    cause_of_death: null,
+                    death_date: null,
+                    full_name: null,
+                },
+                code: null,
+                mode_of_payment: null,
+                status: null,
+                active: false,
+            }),
+
             search: '',
 
             mode_of_payments: [
                 'Full', 'Installment'
             ],
+
+
 
 
         }
@@ -370,6 +487,48 @@ export default {
         }
     },
     methods: {
+        viewItem(item) {
+            this.view_reservation.burial_plot.plot_number = item.burial_plot != null ? item.burial_plot.plot_number : ''
+            this.view_reservation.burial_plot.size = item.burial_plot != null ? item.burial_plot.size : ''
+            this.view_reservation.burial_plot.size = item.burial_plot != null ? item.burial_plot.size : ''
+            this.view_reservation.burial_plot.status = item.burial_plot != null ? item.burial_plot.status : ''
+            this.view_reservation.burial_plot.burial_type_name = item.burial_plot != null && item.burial_plot.burial_type != null ? item.burial_plot.burial_type.name : ''
+            this.view_reservation.client.full_name = item.client != null ? item.client.full_name : ''
+            this.view_reservation.client.contact_number = item.client != null ? item.client.contact_number : ''
+            this.view_reservation.client.address = item.client != null ? item.client.address : ''
+            this.view_reservation.deceased.birth_date = item.deceased != null ? item.deceased.birth_date : ''
+            this.view_reservation.deceased.burial_date = item.deceased != null ? item.deceased.burial_date : ''
+            this.view_reservation.deceased.cause_of_death = item.deceased != null ? item.deceased.cause_of_death : ''
+            this.view_reservation.deceased.death_date = item.deceased != null ? item.deceased.death_date : ''
+            this.view_reservation.deceased.full_name = item.deceased != null ? item.deceased.full_name : ''
+            this.view_reservation.payments = item.payments
+            this.view_reservation.code = item.code
+            this.view_reservation.mode_of_payment = item.mode_of_payment
+            this.view_reservation.status = item.status
+            this.view_reservation.active = true
+        },
+
+        closeViewItem() {
+            this.view_reservation.burial_plot.plot_number = null
+            this.view_reservation.burial_plot.size = null
+            this.view_reservation.burial_plot.size = null
+            this.view_reservation.burial_plot.status = null
+            this.view_reservation.burial_plot.burial_type_name = null
+            this.view_reservation.client.full_name = null
+            this.view_reservation.client.contact_number = null
+            this.view_reservation.client.address = null
+            this.view_reservation.deceased.birth_date = null
+            this.view_reservation.deceased.burial_date = null
+            this.view_reservation.deceased.cause_of_death = null
+            this.view_reservation.deceased.death_date = null
+            this.view_reservation.deceased.full_name = null
+            this.view_reservation.payments = []
+            this.view_reservation.code = null
+            this.view_reservation.mode_of_payment = null
+            this.view_reservation.status = null
+            this.view_reservation.active = false
+        },
+
         openStatusForm(item, status) {
             this.selected_reservation.id = item.id
             this.selected_reservation.code = item.code
@@ -399,6 +558,7 @@ export default {
         },
 
         editItem(item) {
+            console.log(item)
             this.form.id = item.id
             this.form.code = item.code
             this.form.client_id = item.client_id

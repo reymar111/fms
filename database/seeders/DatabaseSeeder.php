@@ -6,6 +6,7 @@ use App\Models\Client;
 use App\Models\Deceased;
 use App\Models\BurialPlot;
 use App\Models\BurialType;
+use App\Models\Reservation;
 use Faker\Factory as Faker;
 use Illuminate\Support\Str;
 use Illuminate\Database\Seeder;
@@ -91,6 +92,25 @@ class DatabaseSeeder extends Seeder
                 'death_date' => $deathDate,
                 'cause_of_death' => $death->optional()->sentence(),
                 'burial_date' => $burialDate,
+            ]);
+        }
+
+        $faker = Faker::create();
+
+        // Get all existing IDs for relationships
+        $clientIds = Client::pluck('id')->toArray();
+        $deceasedIds = Deceased::pluck('id')->toArray();
+        $burialPlotIds = BurialPlot::pluck('id')->toArray();
+
+        for ($i = 0; $i < 50; $i++) {
+            Reservation::create([
+                'code' => 'BR-' . strtoupper(Str::random(8)), // Unique reservation code
+                'client_id' => $faker->randomElement($clientIds),
+                'deceased_id' => $faker->randomElement($deceasedIds),
+                'burial_plot_id' => $faker->randomElement($burialPlotIds),
+                'status' => $faker->randomElement(['Pending', 'Confirmed', 'Completed', 'Canceled']),
+                'mode_of_payment' => $faker->randomElement(['Full', 'Installment']),
+                'total_amount' => $faker->randomFloat(2, 5000, 50000), // Amount between 5,000 and 50,000
             ]);
         }
 
