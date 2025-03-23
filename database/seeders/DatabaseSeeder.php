@@ -23,16 +23,18 @@ class DatabaseSeeder extends Seeder
 
         $users = [
             [
-                'name' => 'John Doe',
+                'name' => 'Administrator',
                 'email' => 'admin@admin.com',
                 'password' => bcrypt('1234567890'),
+                'role' => 'admin',
                 'created_at' => now(),
                 'updated_at' => now()
             ],
             [
-                'name' => 'John Doe',
-                'email' => 'user@user.com',
+                'name' => 'Staff',
+                'email' => 'staff@staff.com',
                 'password' => bcrypt('1234567890'),
+                'role' => 'staff',
                 'created_at' => now(),
                 'updated_at' => now()
             ],

@@ -16,4 +16,11 @@ class BurialPlot extends Model
         return $this->belongsTo(BurialType::class, 'burial_type_id', 'id');
 
     }
+
+    public function reservations()
+    {
+
+        return $this->hasMany(Reservation::class, 'burial_plot_id', 'id');
+
+    }
 }

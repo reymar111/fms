@@ -60,6 +60,10 @@ class BurialTypeController extends Controller
      */
     public function destroy(BurialType $burial_type)
     {
+        if ($burial_type->burial_plots()->count() > 0) {
+            return back()->withErrors(['cannot_delete' => 'Cannot delete burial type with associated burial plots']);
+        }
+
         $burial_type->delete();
 
         return to_route('burial_type.index');

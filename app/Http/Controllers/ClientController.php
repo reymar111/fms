@@ -63,6 +63,10 @@ class ClientController extends Controller
      */
     public function destroy(Client $client)
     {
+        if ($client->reservations()->count() > 0) {
+            return back()->withErrors(['cannot_delete' => 'Item is in use']);
+        }
+
         $client->delete();
 
         return to_route('client.index');

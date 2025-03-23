@@ -115,6 +115,11 @@ class ReservationController extends Controller
      */
     public function destroy( Reservation $reservation)
     {
+        if ($reservation->payments()->count() > 0) {
+            return back()->withErrors(['cannot_delete' => 'Cannot delete reservation with associated payments']);
+        }
+
+
         $reservation->delete();
 
         return to_route('reservation.index');

@@ -68,6 +68,10 @@ class DeceasedController extends Controller
      */
     public function destroy(Deceased $deceased)
     {
+        if ($deceased->reservations()->count() > 0) {
+            return back()->withErrors(['cannot_delete' => 'Item is in use']);
+        }
+
         $deceased->delete();
 
         return to_route('deceased.index');

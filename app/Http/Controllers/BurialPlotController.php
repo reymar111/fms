@@ -65,6 +65,14 @@ class BurialPlotController extends Controller
      */
     public function destroy(BurialPlot $burial_plot)
     {
+        if ($burial_plot->reservations()->count() > 0) {
+            return back()->withErrors(['cannot_delete' => 'Cannot delete burial plot with associated reservations']);
+        }
+
+        if ($burial_plot->burial_type()->count() > 0) {
+            return back()->withErrors(['cannot_delete' => 'Cannot delete burial plot with associated burial type']);
+        }
+
         $burial_plot->delete();
 
         return to_route('burial_plot.index');
