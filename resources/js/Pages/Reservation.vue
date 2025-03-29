@@ -362,6 +362,7 @@
                         <!-- Table 2 -->
                         <div class="border border-gray-300 rounded-lg shadow-sm p-4">
                             <h4 class="text-lg font-semibold mb-3">Payment Details</h4>
+                            <h6 class="text-sm font-semibold mb-3">Mode of Payment: {{view_reservation.mode_of_payment}}</h6>
                             <table class="min-w-full border border-gray-200">
                                 <thead class="bg-gray-100">
                                     <tr>

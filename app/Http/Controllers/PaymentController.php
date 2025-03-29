@@ -35,11 +35,13 @@ class PaymentController extends Controller
         $request->validate([
             'reservation_id' => ['required', 'exists:reservations,id'],
             'amount' => ['required', 'numeric', 'min:0'],
+            'or_number' => ['required', 'string', 'max:255'],
         ]);
 
         $payment = new Payment();
         $payment->reservation_id = $request->reservation_id;
         $payment->amount = $request->amount;
+        $payment->or_number = $request->or_number;
         $payment->save();
 
         // Fetch reservation details
@@ -75,10 +77,12 @@ class PaymentController extends Controller
         $request->validate([
             'reservation_id' => ['required'],
             'amount' => ['required'],
+            'or_number' => ['required'],
         ]);
 
         $payment->reservation_id = $request->reservation_id;
         $payment->amount = $request->amount;
+        $payment->or_number = $request->or_number;
         $payment->update();
 
         return to_route('payment.index');

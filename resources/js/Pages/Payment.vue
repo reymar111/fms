@@ -158,8 +158,12 @@
                     <!-- Modal body -->
                     <div class="p-4 md:p-5 space-y-4">
                         <div>
+                            <label for="email" class="block mb-2 text-sm font-medium text-gray-900 ">OR Number</label>
+                            <input v-model="form.or_number" type="or_number" name="email" id="email" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 " required />
+                        </div>
+                        <div>
                             <label for="email" class="block mb-2 text-sm font-medium text-gray-900 ">Amount</label>
-                            <input v-model="form.amount" type="text" name="email" id="email" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 " required />
+                            <input v-model="form.amount" type="number" name="email" id="email" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 " required />
                         </div>
 
                     </div>
@@ -211,10 +215,11 @@
                 <div class="relative bg-white rounded-lg shadow-sm ">
                     <!-- Modal header -->
                     <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t border-gray-200">
-                        <h3 class="text-xl font-semibold text-gray-900 ">
+                        <h3 class="text-lg font-semibold text-gray-900 ">
                             Reservation: {{ selected_reservation.code }}<br>
                             Client: {{ selected_reservation.client_name }}<br>
                             Deceased: {{ selected_reservation.deceased_name }}<br>
+                            Mode of Payment: {{ selected_reservation.mode_of_payment }}<br>
                         </h3>
                         <button @click="closeForm" type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center " data-modal-hide="default-modal">
                             <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
@@ -230,6 +235,7 @@
                                 <thead class="bg-gray-100">
                                     <tr>
                                         <th class="px-4 py-2 text-left text-gray-700 border-b">#</th>
+                                        <th class="px-4 py-2 text-left text-gray-700 border-b">OR #</th>
                                         <th class="px-4 py-2 text-left text-gray-700 border-b">Amount</th>
                                         <th class="px-4 py-2 text-left text-gray-700 border-b">Paid on</th>
                                     </tr>
@@ -237,6 +243,7 @@
                                 <tbody>
                                     <tr class="border-b" v-for="(item, index) in selected_reservation.payments" :key="index">
                                         <td class="px-4 py-2">{{ index + 1 }}</td>
+                                        <td class="px-4 py-2">{{ item.or_number }}</td>
                                         <td class="px-4 py-2">{{ item.amount }}</td>
                                         <td class="px-4 py-2">{{ item.created_at }}</td>
                                     </tr>
@@ -282,6 +289,7 @@ export default {
                 reservation_id: '',
                 code: '',
                 amount: '',
+                or_number: '',
                 active: false,
                 is_editing: false,
             }),
@@ -297,6 +305,7 @@ export default {
                 code: '',
                 client_name: '',
                 deceased_name: '',
+                mode_of_payment: '',
                 payments: [],
                 active: false,
             },
@@ -331,6 +340,7 @@ export default {
             this.form.reservation_id = ''
             this.form.amount = ''
             this.form.code = ''
+            this.form.or_number = ''
             this.form.active = false
             this.form.is_editing = false
         },
@@ -340,6 +350,7 @@ export default {
             this.form.reservation_id = item.id
             this.form.amount = item.amount
             this.form.code = item.code
+            this.form.or_number = item.or_number
             this.form.active = true
             this.form.is_editing = true
         },
@@ -350,6 +361,7 @@ export default {
             this.selected_reservation.client_name = item.client != null ? item.client.full_name : ''
             this.selected_reservation.deceased_name = item.deceased != null ? item.deceased.full_name : ''
             this.selected_reservation.payments = item.payments
+            this.selected_reservation.mode_of_payment = item.mode_of_payment
             this.selected_reservation.active = true
         },
 
@@ -358,7 +370,8 @@ export default {
             this.selected_reservation.code = ''
             this.selected_reservation.client_name = ''
             this.selected_reservation.deceased_name = ''
-            this.selected_reservation.payments = ''
+            this.selected_reservation.payments = []
+            this.selected_reservation.mode_of_payment = ''
             this.selected_reservation.active = false
         },
 
