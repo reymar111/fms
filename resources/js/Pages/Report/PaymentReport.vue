@@ -16,6 +16,7 @@
                                 <th class="px-4 py-2 text-left text-gray-700 border-b">#</th>
                                 <th class="px-4 py-2 text-left text-gray-700 border-b">Reservation Code</th>
                                 <th class="px-4 py-2 text-left text-gray-700 border-b">Client</th>
+                                <th class="px-4 py-2 text-left text-gray-700 border-b">OR Number</th>
                                 <th class="px-4 py-2 text-left text-gray-700 border-b">Payment Amount</th>
                                 <th class="px-4 py-2 text-left text-gray-700 border-b">Total Amount </th>
                                 <th class="px-4 py-2 text-left text-gray-700 border-b">Balance</th>
@@ -27,6 +28,7 @@
                                 <td class="px-4 py-2">{{ index + 1 }}</td>
                                 <td class="px-4 py-2">{{ item.reservation_code }}</td>
                                 <td class="px-4 py-2">{{ item.client_name }}</td>
+                                <td class="px-4 py-2">{{ item.or_number }}</td>
                                 <td class="px-4 py-2">₱{{ item.payment_amount }}</td>
                                 <td class="px-4 py-2">₱{{ item.total_amount }}</td>
                                 <td class="px-4 py-2">₱{{ item.remaining_balance }}</td>

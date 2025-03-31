@@ -44,21 +44,23 @@ class ReportController extends Controller
             ->join('clients as c', 'r.client_id', '=', 'c.id')
             ->select(
                 'p.id as payment_id',
+                'p.or_number',
                 'r.code as reservation_code',
                 'c.full_name as client_name',
                 'p.amount as payment_amount',
                 'r.total_amount',
-                DB::raw('(r.total_amount - SUM(p.amount)) as remaining_balance'),
+                DB::raw('r.total_amount - SUM(p.amount) OVER (PARTITION BY r.id ORDER BY p.created_at ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS remaining_balance'),
                 'p.created_at as payment_date'
             )
-            ->groupBy('p.id', 'r.code', 'c.full_name', 'p.amount', 'r.total_amount')
+            ->orderBy('r.code')
+            ->orderBy('p.created_at')
             ->get();
 
-            return Inertia::render('Report/PaymentReport',
-            [
-                'data' => $data,
-            ]);
+        return Inertia::render('Report/PaymentReport', [
+            'data' => $data,
+        ]);
     }
+
 
     public function generateAvailablePlotsReport()
     {
